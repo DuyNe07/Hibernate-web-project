@@ -37,6 +37,8 @@ public class HibernateUtil {
 		pros.put(Environment.USER, "sa");
 		pros.put(Environment.PASS, "123456");
 
+		pros.put("hibernate.search.default.indexBase", "indexes");
+
 		conf.setProperties(pros);
 		conf.addAnnotatedClass(Address.class);
 		conf.addAnnotatedClass(UserAccount.class);

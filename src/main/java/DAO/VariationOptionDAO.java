@@ -24,7 +24,6 @@ public class VariationOptionDAO {
 
 		VariationOption variationOption = session.createQuery(query).uniqueResult();
 		return variationOption;
-		
 	}
 	
 //	public VariationOption getVariationOption(String value) {

@@ -2,7 +2,6 @@ package utils;
 
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
 
 import DAO.ProductCategoryDAO;
 import DAO.ProductDAO;
@@ -105,9 +104,9 @@ public class demo {
 		
 //		System.out.print(productDAO.getProductbyID(1).getDescription());
 
-//		List<Product> productList = productDAO.searchProduct("jacket");
+		List<Product> productList = productDAO.searchProduct("jacket");
 
-//		productList.forEach(p -> System.out.println(p.getName()));
+		productList.forEach(p -> System.out.println(p.getName()));
 
 	}
 	
@@ -171,6 +170,7 @@ public class demo {
 	}
 	
 	public static void main(String[] args) throws Exception {
-		addProductItem();
+		demoProduct();
+
 	}
 }
