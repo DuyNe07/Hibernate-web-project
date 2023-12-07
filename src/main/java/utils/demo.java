@@ -1,17 +1,15 @@
 package utils;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
+import java.util.Set;
 
-import DAO.ProductCategoryDAO;
-import DAO.ProductDAO;
-import DAO.ProductItemDAO;
-import DAO.ShoppingCartDAO;
-import DAO.ShoppingCartItemDAO;
-import DAO.UserAccountDAO;
+import DAO.*;
 import bean.Product;
 import bean.ProductCategory;
 import bean.ProductItem;
+import bean.VariationOption;
 
 public class demo {
 	public static void demoUser() {
@@ -104,9 +102,9 @@ public class demo {
 		
 //		System.out.print(productDAO.getProductbyID(1).getDescription());
 
-		List<Product> productList = productDAO.searchProduct("jacket");
-
-		productList.forEach(p -> System.out.println(p.getName()));
+//		List<Product> productList = productDAO.searchProduct("jacket");
+//
+//		productList.forEach(p -> System.out.println(p.getName()));
 
 	}
 	
@@ -124,11 +122,11 @@ public class demo {
 
 //		productDAO.addProduct(newProduct, "Shirt");
 
-		newProductItem.setPrice(12000);
-		newProductItem.setQty_in_stock(50);
-		newProductItem.setProduct_image(null);
-		
-		productItemDAO.addProductItem(newProductItem, 1002, "S", "White");
+//		newProductItem.setPrice(12000);
+//		newProductItem.setQty_in_stock(100);
+//		newProductItem.setProduct_image(null);
+//
+//		productItemDAO.addProductItem(newProductItem, 1002, "XL", "White");
 //		productItemDAO.addProductItem(newProductItem, 2, "L", "White");
 //		productItemDAO.addProductItem(newProductItem, 2, "XL", "White");
 //		
@@ -136,8 +134,13 @@ public class demo {
 //		productItemDAO.addProductItem(newProductItem, 2, "L", "Black");
 //		productItemDAO.addProductItem(newProductItem, 2, "XL", "Black");
 
-//		List<ProductItem> productItems = productDAO.getProductItemsByProduct(2);
-//		productItems.forEach(p -> System.out.println(p.getSku()));
+//		List<ProductItem> productItems = productItemDAO.getListProductItemByProductID(2);
+//		for(ProductItem productItem : productItems){
+//			for(VariationOption variationOption : productItem.getVariationOptions()){
+//				variationOption.getVariation().getName();
+//			}
+//			productItem.getVariationOptions().forEach(p -> System.out.println(p.getVariation().getName() +": " + p.getValue()));
+//		}
 		
 //		Set<String> setColor = new HashSet<String>();
 //		Set<String> setSize = new HashSet<String>();
@@ -150,8 +153,13 @@ public class demo {
 //		setColor.add("Red");
 		
 //		productItemDAO.addListProductItem(newProductItem, newProduct, setSize, setColor, productCategoryPick);
-		ProductItem productItem = productItemDAO.getProductItemsByConditions(1002, "S", "White");
-		System.out.println(productItem.getSku());
+//		ProductItem productItem = productItemDAO.getProductItemsByConditions(1002, "S", "White");
+//		System.out.println(productItem.getSku());
+		List<ProductItem> productItems = productItemDAO.getListProductItemByProductID(1002);
+		productItems.forEach(p -> System.out.println(p.getSku()));
+		System.out.println("-----------");
+		List<ProductItem> productItems2 = productItemDAO.getListProductItemByProductID2(1002);
+		productItems2.forEach(p -> System.out.println(p.getSku()));
 	}
 	
 	public static void demoShoppingCart() {
@@ -168,9 +176,16 @@ public class demo {
 		shoppingCartItemDAO.addProductToShoppingCart(11, 4, 1);
 		
 	}
-	
+
+	public static void demoVariation(){
+		VariationOptionDAO variationOptionDAO = new VariationOptionDAO();
+
+		Set<VariationOption> variationOptions = variationOptionDAO.getVariationOptionByProductID(1002);
+		variationOptions.forEach(p -> System.out.println(p.getValue()));
+	}
+
 	public static void main(String[] args) throws Exception {
-		demoProduct();
+		addProductItem();
 
 	}
 }

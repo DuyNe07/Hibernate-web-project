@@ -135,7 +135,7 @@ public class UserAccountDAO {
 	}
 
 	// Xoá 1 user ra khỏi hệ thông
-	public void deleteUser(String email) {
+	public void deleteUser(int userID) {
 		try (Session session = factory.openSession()) {
 			try {
 				session.getTransaction().begin();
@@ -143,7 +143,7 @@ public class UserAccountDAO {
 				CriteriaQuery<UserAccount> query = builder.createQuery(UserAccount.class);
 				Root<UserAccount> root = query.from(UserAccount.class);
 
-				Predicate condition = builder.equal(root.get("emailAddress"), email);
+				Predicate condition = builder.equal(root.get("userID"), userID);
 				query.where(condition);
 
 				Query<UserAccount> result = session.createQuery(query);
