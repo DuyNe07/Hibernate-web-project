@@ -5,17 +5,7 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "product_item")
@@ -42,13 +32,15 @@ public class ProductItem implements Serializable {
 	private String product_image;
 
 	@Column(name = "price")
-	private int price;
+	private float price;
 
 	@ManyToOne(cascade = CascadeType.PERSIST)
 	@JoinColumn(name = "product_id")
 	private Product product;
 	
-	@ManyToMany(mappedBy = "productItems")
+	@ManyToMany
+	@JoinTable(name = "product_configuration",
+			joinColumns = @JoinColumn(name = "product_item_id"), inverseJoinColumns = @JoinColumn(name = "variation_option_id"))
 	private Set<VariationOption> variationOptions = new HashSet<VariationOption>();
 
 	@OneToMany(mappedBy = "productItem")
@@ -109,11 +101,11 @@ public class ProductItem implements Serializable {
 		this.product_image = product_image;
 	}
 
-	public int getPrice() {
+	public float getPrice() {
 		return price;
 	}
 
-	public void setPrice(int price) {
+	public void setPrice(float price) {
 		this.price = price;
 	}
 

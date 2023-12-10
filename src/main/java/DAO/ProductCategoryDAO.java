@@ -48,6 +48,7 @@ public class ProductCategoryDAO {
 			
 			//query.select(root);
 			query.where(builder.equal(root.get("productCategoryID"), productCategoryID));
+			root.fetch("products", JoinType.LEFT);
 			
 			ProductCategory productCategory = session.createQuery(query).uniqueResult();
 			return productCategory;
@@ -149,5 +150,24 @@ public class ProductCategoryDAO {
 			}
 			return null;
 		}
-	}	
+	}
+
+	public boolean deteleCategory(int productCategoryID){
+		try(Session session = factory.openSession()){
+			session.getTransaction().begin();
+			ProductCategory productCategory = getProductCategorybyID(productCategoryID);
+			if(productCategory.getProducts().size() == 0){
+				session.delete(productCategory);
+				System.out.println("Successfully deleted product category");
+				session.getTransaction().commit();
+				session.close();
+				return true;
+			}
+			else {
+				System.out.println("This product category does exist product");
+				session.close();
+				return false;
+			}
+		}
+	}
 }

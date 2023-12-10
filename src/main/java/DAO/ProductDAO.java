@@ -75,6 +75,8 @@ public class ProductDAO {
 			
 			query.select(root);
 			query.where(builder.equal(builder.lower(root.get("name")), productName.toLowerCase()));
+			root.fetch("productItems", JoinType.LEFT);
+
             return session.createQuery(query).uniqueResult();
 		}
 	}
@@ -127,4 +129,68 @@ public class ProductDAO {
 	    Long count = session.createQuery(query).uniqueResult();
 	    return count != null && count > 0;
 	}
+
+	public boolean deteleProduct(int productID){
+		try(Session session = factory.openSession()){
+			session.getTransaction().begin();
+			Product product = getProduct(getProductbyID(productID).getName());
+			if(product.getProductItems().size() == 0){
+				session.delete(product);
+				System.out.println("Successfully deleted product");
+				session.getTransaction().commit();
+				session.close();
+				return true;
+			}
+			else {
+				System.out.println("This product does exist product item");
+				session.close();
+				return false;
+			}
+		}
+	}
+
+	public boolean editProduct(int oldProductID, Product newProduct){
+		try(Session session = factory.openSession()){
+			try{
+				session.getTransaction().begin();
+
+				Product oldProduct = getProduct(getProductbyID(oldProductID).getName());
+				if(newProduct.getProductCategory() != null){
+					oldProduct.setProductCategory(newProduct.getProductCategory());
+				}
+				if(newProduct.getName() != null){
+					oldProduct.setName(newProduct.getName());
+				}
+				if(newProduct.getDescription() != null){
+					oldProduct.setDescription(newProduct.getDescription());
+				}
+				if(newProduct.getProduct_image() != null){
+					oldProduct.setProduct_image(newProduct.getProduct_image());
+				}
+
+				session.getTransaction().commit();
+				System.out.println("Successfully edit product");
+				session.close();
+			}catch (Exception e){
+				if (session.getTransaction() != null) {
+					session.getTransaction().rollback();
+				}
+				System.out.println("An error occurred during the update process");
+				e.printStackTrace();
+			}
+
+			return false;
+		}
+	}
+//	public List<Customer> getItemsOnSecondPage(int pageSize) {
+//		int pageNumber = 2; // Trang thứ 2
+//		int startPosition = (pageNumber - 1) * pageSize; // Tính vị trí bắt đầu từ số trang và kích thước trang
+//
+//		Session session = sessionFactory.openSession();
+//		Criteria criteria = session.createCriteria(Customer.class);
+//		criteria.setFirstResult(startPosition);
+//		criteria.setMaxResults(pageSize);
+//
+//		return criteria.list();
+//	}
 }

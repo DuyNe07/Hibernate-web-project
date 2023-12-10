@@ -39,9 +39,7 @@ public class VariationOption implements Serializable {
 	@JoinColumn(name = "variation_id")
 	private Variation variation;
 	
-	@ManyToMany
-	@JoinTable(name = "product_configuration", 
-			joinColumns = @JoinColumn(name = "variation_option_id"), inverseJoinColumns = @JoinColumn(name = "product_item_id"))
+	@ManyToMany(mappedBy = "variationOptions")
 	private Set<ProductItem> productItems;
 
 	public VariationOption(String value, Variation variation, Set<ProductItem> productItems) {
