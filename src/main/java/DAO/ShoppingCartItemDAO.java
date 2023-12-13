@@ -12,6 +12,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.util.Set;
 
 public class ShoppingCartItemDAO {
 	private static final SessionFactory factory = HibernateUtil.getSessionFactory();
@@ -24,12 +25,22 @@ public class ShoppingCartItemDAO {
 				
 				ShoppingCart shoppingCart = shoppingCartDAO.getShoppingCart(userID);
 				ProductItem productItem = session.get(ProductItem.class, productItemID);
-				ShoppingCartItem shoppingCartItem = new ShoppingCartItem(quantity, null, null);
-				shoppingCartItem.setShoppingCart(shoppingCart);
-				shoppingCartItem.setProductItem(productItem);
 
+				Set<ShoppingCartItem> shoppingCartItems = shoppingCartDAO.listProductItemByUserID(userID);
+				boolean oldItem = false;
+				for(ShoppingCartItem shoppingCartItem : shoppingCartItems){
+					if(shoppingCartItem.getProductItem().getProductItemID() == productItemID){
+						oldItem =true;
+						int new_quantity = shoppingCartItem.getQty() + quantity;
+						shoppingCartItem.setQty(new_quantity);
+						session.saveOrUpdate(shoppingCartItem);
+					}
+				}
+				if(oldItem == false) {
+					ShoppingCartItem shoppingCartItem = new ShoppingCartItem(quantity, shoppingCart, productItem);
+					session.save(shoppingCartItem);
+				}
 				System.out.println("Completed adding items to cart");
-				session.save(shoppingCartItem);
 				session.getTransaction().commit();
 				session.close();
 				return true;

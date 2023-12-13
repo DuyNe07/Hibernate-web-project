@@ -42,6 +42,17 @@ public class demo {
 	public static void demoProduct() throws Exception {
 		ProductCategoryDAO productCategoryDAO = new ProductCategoryDAO();
 		ProductDAO productDAO = new ProductDAO();
+//		ProductCategory productCategory = productCategoryDAO.getProductCategorybyID(2);
+//		Product newProduct = new Product();
+//		newProduct.setName("Shirt 6");
+//		newProduct.setProduct_image("123.jpg");
+//		newProduct.setDescription("he he");
+//		newProduct.setProductCategory(productCategory);
+//		productDAO.editProduct(7, newProduct);
+//		productDAO.addProduct(newProduct, "Shirt");
+
+		List<Product> products = productDAO.getProductsByPage(2, 3);
+		products.forEach(p -> System.out.println(p.getName()));
 	}
 	
 	
@@ -50,9 +61,9 @@ public class demo {
 		ProductDAO productDAO = new ProductDAO();
 		
 		Product newProduct = new Product();
-		ProductItem newProductItem = new ProductItem();
-		productItemDAO.deleteProductItem(5);
 
+		ProductItem productItem = productItemDAO.getProductItemsByConditions(1, "S", "Red");
+		System.out.println(productItem.getSku());
 	}
 
 	
@@ -65,6 +76,8 @@ public class demo {
 			System.out.println(shoppingCartItem.getProductItem().getProduct().getName());
 			shoppingCartItem.getProductItem().getVariationOptions().forEach(p -> System.out.println(p.getValue()));
 		}
+
+
 	}
 	
 	public static void demoShoppingCartItem() {
@@ -83,6 +96,6 @@ public class demo {
 	}
 
 	public static void main(String[] args) throws Exception {
-		demoShoppingCart();
+		demoProduct();
 	}
 }

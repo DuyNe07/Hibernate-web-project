@@ -1,6 +1,7 @@
 package DAO;
 
 import java.util.List;
+import java.util.Queue;
 import java.util.Set;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -9,7 +10,6 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import org.apache.lucene.search.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
@@ -33,7 +33,7 @@ public class ProductDAO {
             SearchFactory searchFactory = fullTextSession.getSearchFactory();
 
             QueryBuilder mythQB = searchFactory.buildQueryBuilder().forEntity(Product.class).get();
-            Query luceneQuery = mythQB.phrase().onField("name").sentence(name).createQuery();
+			org.apache.lucene.search.Query luceneQuery = mythQB.phrase().onField("name").sentence(name).createQuery();
             FullTextQuery fullTextQuery = fullTextSession.createFullTextQuery(luceneQuery, Product.class);
 
             return fullTextQuery.getResultList();
@@ -67,14 +67,14 @@ public class ProductDAO {
 		}
 	}
 	
-	public Product getProduct(String productName) {
+	public Product getProduct(int productID) {
 		try(Session session = factory.openSession()){
 			CriteriaBuilder builder = session.getCriteriaBuilder();
 			CriteriaQuery<Product> query = builder.createQuery(Product.class);
 			Root<Product> root = query.from(Product.class);
 			
 			query.select(root);
-			query.where(builder.equal(builder.lower(root.get("name")), productName.toLowerCase()));
+			query.where(builder.equal(builder.lower(root.get("productID")), productID));
 			root.fetch("productItems", JoinType.LEFT);
 
             return session.createQuery(query).uniqueResult();
@@ -133,7 +133,7 @@ public class ProductDAO {
 	public boolean deteleProduct(int productID){
 		try(Session session = factory.openSession()){
 			session.getTransaction().begin();
-			Product product = getProduct(getProductbyID(productID).getName());
+			Product product = getProduct(productID);
 			if(product.getProductItems().size() == 0){
 				session.delete(product);
 				System.out.println("Successfully deleted product");
@@ -154,11 +154,11 @@ public class ProductDAO {
 			try{
 				session.getTransaction().begin();
 
-				Product oldProduct = getProduct(getProductbyID(oldProductID).getName());
+				Product oldProduct = getProduct(oldProductID);
 				if(newProduct.getProductCategory() != null){
 					oldProduct.setProductCategory(newProduct.getProductCategory());
 				}
-				if(newProduct.getName() != null){
+				if(newProduct.getName() != null && !isProductNameExists(session ,newProduct.getName())){
 					oldProduct.setName(newProduct.getName());
 				}
 				if(newProduct.getDescription() != null){
@@ -168,6 +168,7 @@ public class ProductDAO {
 					oldProduct.setProduct_image(newProduct.getProduct_image());
 				}
 
+				session.saveOrUpdate(oldProduct);
 				session.getTransaction().commit();
 				System.out.println("Successfully edit product");
 				session.close();
@@ -182,15 +183,18 @@ public class ProductDAO {
 			return false;
 		}
 	}
-//	public List<Customer> getItemsOnSecondPage(int pageSize) {
-//		int pageNumber = 2; // Trang thứ 2
-//		int startPosition = (pageNumber - 1) * pageSize; // Tính vị trí bắt đầu từ số trang và kích thước trang
-//
-//		Session session = sessionFactory.openSession();
-//		Criteria criteria = session.createCriteria(Customer.class);
-//		criteria.setFirstResult(startPosition);
-//		criteria.setMaxResults(pageSize);
-//
-//		return criteria.list();
-//	}
+
+	public List<Product> getProductsByPage(int pageNumber, int pageSize) {
+		try (Session session = factory.openSession()) {
+			String sql = "SELECT * FROM product ORDER BY id OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+
+			org.hibernate.query.Query<Product> nativeQuery = session.createNativeQuery(sql, Product.class);
+			nativeQuery.setParameter(1, (pageNumber - 1) * pageSize);
+			nativeQuery.setParameter(2, pageSize);
+
+			List<Product> products = nativeQuery.getResultList();
+			return products;
+		}
+	}
+
 }

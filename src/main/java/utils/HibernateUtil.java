@@ -36,7 +36,6 @@ public class HibernateUtil {
 				"jdbc:sqlserver://26.46.117.205:2703;databaseName=testDuckstore;encrypt=true;trustServerCertificate=true;characterEncoding=UTF-8;useUnicode=true");
 		pros.put(Environment.USER, "sa");
 		pros.put(Environment.PASS, "123456");
-
 		pros.put("hibernate.search.default.indexBase", "indexes");
 
 		conf.setProperties(pros);
@@ -54,9 +53,9 @@ public class HibernateUtil {
 		conf.addAnnotatedClass(OrderStatus.class);
 		conf.addAnnotatedClass(ShopOrder.class);
 		conf.addAnnotatedClass(OrderLine.class);
+
 		
 		ServiceRegistry registry = new StandardServiceRegistryBuilder().applySettings(conf.getProperties()).build();
-
 		FACTORY = conf.buildSessionFactory(registry);
 
 	}

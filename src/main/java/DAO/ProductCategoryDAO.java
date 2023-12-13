@@ -26,7 +26,7 @@ public class ProductCategoryDAO {
 			CriteriaQuery<ProductCategory> query = builder.createQuery(ProductCategory.class);
 			Root<ProductCategory> root = query.from(ProductCategory.class);
 			
-			Predicate conditionPredicate = builder.equal(root.get("categoryName"), productCategoryName);
+			Predicate conditionPredicate = builder.equal(builder.lower(root.get("categoryName")), productCategoryName.toLowerCase());
 			query.where(conditionPredicate);
 			
 			Query<ProductCategory> productCategoryQuery = session.createQuery(query);

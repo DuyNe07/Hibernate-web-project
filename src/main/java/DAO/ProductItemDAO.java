@@ -40,7 +40,7 @@ public class ProductItemDAO {
 				VariationOptionDAO variationOptionDAO = new VariationOptionDAO();
 				ProductDAO productDAO = new ProductDAO();
 				
-				Product product = productDAO.getProduct(productDAO.getProductbyID(ProductID).getName());
+				Product product = productDAO.getProduct(ProductID);
                 ProductItem oldProductItem = getProductItemsByConditions(ProductID, size, color);
                 if(oldProductItem != null){
                     int oldQuantity = oldProductItem.getQty_in_stock();
@@ -103,10 +103,10 @@ public class ProductItemDAO {
                 boolean contrainSize = false;
 
                 for(VariationOption variationOption : variationOptions){
-                    if(size.equals(variationOption.getValue())){
+                    if(size.toLowerCase().equals(variationOption.getValue().toLowerCase())){
                         contrainSize = true;
                     }
-                    else if(color.equals(variationOption.getValue())){
+                    else if(color.toLowerCase().equals(variationOption.getValue().toLowerCase())){
                         containColor = true;
                     }
                 }
@@ -156,7 +156,7 @@ public class ProductItemDAO {
     }
 
 
-    public boolean editProductItem(int productItemID ,int newQuantity, float newPrice){
+    public boolean editProductItem(int productItemID ,int newQuantity, float newPrice, String img_url){
         try(Session session = factory.openSession()){
             try{
                 session.getTransaction().begin();
@@ -164,6 +164,7 @@ public class ProductItemDAO {
                 ProductItem productItem = getProductItem(productItemID);
                 productItem.setPrice(newPrice);
                 productItem.setQty_in_stock(newQuantity);
+                productItem.setProduct_image(img_url);
 
                 session.saveOrUpdate(productItem);
                 session.getTransaction().commit();
