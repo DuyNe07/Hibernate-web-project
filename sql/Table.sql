@@ -1,5 +1,4 @@
-﻿USE duckstore
-USE testDuckstore
+﻿USE testDuckstore
 
 CREATE TABLE site_user (
 	id INT IDENTITY(1,1),
@@ -56,7 +55,7 @@ CREATE TABLE product_item (
 	sku NVARCHAR(20),
 	qty_in_stock INT,
 	product_image NVARCHAR(1000),
-	price INT,
+	price FLOAT,
 	CONSTRAINT PK_productitem PRIMARY KEY (id),
 	CONSTRAINT FK_proditem_product FOREIGN KEY (product_id) REFERENCES product (id)
 );
@@ -102,7 +101,7 @@ CREATE TABLE shopping_cart_item (
 CREATE TABLE shipping_method (
 	id INT IDENTITY(1,1),
 	name NVARCHAR(100) UNIQUE,
-	price INT,
+	price FLOAT,
 	CONSTRAINT PK_shipmethod PRIMARY KEY (id)
 );
 
@@ -112,21 +111,30 @@ CREATE TABLE order_status (
 	CONSTRAINT PK_orderstatus PRIMARY KEY (id)
 );
 
+CREATE TABLE payment_method (
+	id INT IDENTITY(1,1),
+	name NVARCHAR(100) UNIQUE,
+	CONSTRAINT PK_paymentmethod PRIMARY KEY (id)
+);
+
+
 CREATE TABLE shop_order (
 	id INT IDENTITY(1,1),
 	user_id INT,
 	order_date DATETIME,
 	shipping_address INT,
 	shipping_method INT,
-	order_total INT,
+	order_total float,
 	order_status INT,
 	promotion_id INT,
+	payment_method INT,
 	CONSTRAINT PK_shoporder PRIMARY KEY (id),
 	CONSTRAINT FK_shoporder_user FOREIGN KEY (user_id) REFERENCES site_user (id),
 	CONSTRAINT FK_shoporder_shipaddress FOREIGN KEY (shipping_address) REFERENCES address (id),
 	CONSTRAINT FK_shoporder_shipmethod FOREIGN KEY (shipping_method) REFERENCES shipping_method (id),
 	CONSTRAINT FK_shoporder_status FOREIGN KEY (order_status) REFERENCES order_status (id),
-	CONSTRAINT FK_shoporder_pro FOREIGN KEY (promotion_id) REFERENCES promotion (id)
+	CONSTRAINT FK_shoporder_pro FOREIGN KEY (promotion_id) REFERENCES promotion (id),
+	CONSTRAINT FK_shoporder_paymentmethod FOREIGN KEY (payment_method) REFERENCES payment_method(id)
 );
 
 CREATE TABLE order_line (
@@ -134,7 +142,7 @@ CREATE TABLE order_line (
 	product_item_id INT,
 	order_id INT,
 	qty INT,
-	price INT,
+	price float,
 	CONSTRAINT PK_orderline PRIMARY KEY (id),
 	CONSTRAINT FK_orderline_proditem FOREIGN KEY (product_item_id) REFERENCES product_item (id),
 	CONSTRAINT FK_orderline_order FOREIGN KEY (order_id) REFERENCES shop_order (id)
@@ -159,3 +167,21 @@ VALUES (1, 'S'),
 	(2, 'White'),
 	(2, 'Black'),
 	(2, 'Brown');
+
+INSERT INTO shipping_method
+VALUES ('Express', 3),
+	('Fast', 2),
+	('Normal', 1.2),
+	('Economical', 0.8);
+
+INSERT INTO order_status
+VALUES ('Preparing orders'),
+	('Handed over to the shipping unit'),
+	('Arrived at the transit warehouse'),
+	('On the way to you'),
+	('Complete')
+
+INSERT INTO payment_method
+VALUES ('COD'),
+	('Paypal'),
+	('VISA')
