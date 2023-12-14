@@ -30,7 +30,7 @@ public class OrderLine implements Serializable{
 	private int qty;
 	
 	@Column(name = "price")
-	private int price;
+	private float price;
 	
 	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "product_item_id")
@@ -68,11 +68,11 @@ public class OrderLine implements Serializable{
 		this.qty = qty;
 	}
 
-	public int getPrice() {
+	public float getPrice() {
 		return price;
 	}
 
-	public void setPrice(int price) {
+	public void setPrice(float price) {
 		this.price = price;
 	}
 

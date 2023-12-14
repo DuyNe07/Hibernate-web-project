@@ -178,6 +178,9 @@ public class UserAccountDAO {
 					if (newUserAccount.getName() != null) {
 						userAccount.setName(newUserAccount.getName());
 					}
+					if (newUserAccount.getRole() != null) {
+						userAccount.setRole(newUserAccount.getRole());
+					}
 					// Cập nhật UserAccount trong cơ sở dữ liệu
 					session.update(userAccount);
 				}

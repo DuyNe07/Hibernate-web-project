@@ -46,6 +46,9 @@ public class UserAccount implements Serializable {
 	@OneToOne(mappedBy = "userAccount")
 	private ShoppingCart shoppingCart;
 
+	@OneToMany(mappedBy = "userAccount")
+	private Set<ShopOrder> shopOrders;
+
 	public UserAccount(String name, String emailAddress, String phoneNumber, String password, Integer role,
 			Set<Address> addresses, ShoppingCart shoppingCarts) {
 		super();
@@ -134,4 +137,11 @@ public class UserAccount implements Serializable {
 		return serialVersionUID;
 	}
 
+	public Set<ShopOrder> getShopOrders() {
+		return shopOrders;
+	}
+
+	public void setShopOrders(Set<ShopOrder> shopOrders) {
+		this.shopOrders = shopOrders;
+	}
 }

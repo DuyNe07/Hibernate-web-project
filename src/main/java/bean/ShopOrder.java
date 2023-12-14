@@ -1,19 +1,10 @@
 package bean;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "shop_order")
@@ -30,10 +21,10 @@ public class ShopOrder implements Serializable{
 	private int shopOrderID;
 	
 	@Column(name = "order_date")
-	private Date orderDate;
+	private LocalDate orderDate;
 	
 	@Column(name = "order_total")
-	private int orderTotal;
+	private float orderTotal;
 	
 	@ManyToOne(cascade = CascadeType.PERSIST)
 	@JoinColumn(name = "shipping_method")
@@ -58,17 +49,18 @@ public class ShopOrder implements Serializable{
 	@JoinColumn(name = "promotion_id")
 	private Promotion promotion;
 
-	public ShopOrder(Date orderDate, int orderTotal, ShippingMethod shippingMethod, OrderStatus orderStatus,
+	@ManyToOne(cascade = CascadeType.PERSIST)
+	@JoinColumn(name = "payment_method")
+	private PaymentMethod paymentMethod;
+
+	public ShopOrder(LocalDate orderDate, int orderTotal, ShippingMethod shippingMethod, OrderStatus orderStatus,
 			UserAccount userAccount, Address address, Set<OrderLine> orderLines, Promotion promotion) {
 		super();
 		this.orderDate = orderDate;
 		this.orderTotal = orderTotal;
 		this.shippingMethod = shippingMethod;
-		this.orderStatus = orderStatus;
 		this.userAccount = userAccount;
 		this.address = address;
-		this.orderLines = orderLines;
-		this.promotion = promotion;
 	}
 	public ShopOrder() {
 		// TODO Auto-generated constructor stub
@@ -81,19 +73,19 @@ public class ShopOrder implements Serializable{
 		this.shopOrderID = shopOrderID;
 	}
 
-	public Date getOrderDate() {
+	public LocalDate getOrderDate() {
 		return orderDate;
 	}
 
-	public void setOrderDate(Date orderDate) {
+	public void setOrderDate(LocalDate orderDate) {
 		this.orderDate = orderDate;
 	}
 
-	public int getOrderTotal() {
+	public float getOrderTotal() {
 		return orderTotal;
 	}
 
-	public void setOrderTotal(int orderTotal) {
+	public void setOrderTotal(float orderTotal) {
 		this.orderTotal = orderTotal;
 	}
 
@@ -148,6 +140,13 @@ public class ShopOrder implements Serializable{
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
-	
-	
+
+
+	public PaymentMethod getPaymentMethod() {
+		return paymentMethod;
+	}
+
+	public void setPaymentMethod(PaymentMethod paymentMethod) {
+		this.paymentMethod = paymentMethod;
+	}
 }

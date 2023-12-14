@@ -1,9 +1,7 @@
 package utils;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Random;
-import java.util.Set;
+import java.time.LocalDate;
+import java.util.*;
 
 import DAO.*;
 import bean.*;
@@ -11,16 +9,21 @@ import bean.*;
 public class demo {
 	public static void demoUser() {
 		UserAccountDAO userAccountDAO = new UserAccountDAO();
+		AddressDAO addressDAO = new AddressDAO();
 
+		Address address = new Address("59", "Dinh Bo Linh", "Ho Chi Minh", "Binh Thanh", null, null);
+//		addressDAO.deleteAddress(1);
+		addressDAO.addAddressForUser(address, 3);
 		/*
 		 * UserAccount newUserAccount1 = new UserAccount("manager", "manager@gmail.com",
 		 * "0123456789", "123", 0, null, null); userAccountDAO.addUser(newUserAccount1);
 		 * UserAccount newUserAccount2 = new UserAccount("staff", "staff@gmail.com",
 		 * "0123456789", "123", 1, null, null); userAccountDAO.addUser(newUserAccount2);
 		 */
-		UserAccount newUserAccount = new UserAccount("client", "client2@gmail.com", "0123456789", "123", 2, null, null);
+//		UserAccount newUserAccount = new UserAccount("manager", "manager@gmail.com", "0123456789", "123", 0, null, null);
+//		UserAccount newUserAccount = new UserAccount("client", "client@gmail.com", "1234567890", "123", 2, null, null);
 //		userAccountDAO.addUser(newUserAccount);
-		userAccountDAO.editUser(1, newUserAccount);
+//		userAccountDAO.editUser(1, newUserAccount);
 	}
 
 	public static void demoProductCategory() {
@@ -70,22 +73,21 @@ public class demo {
 	public static void demoShoppingCart() {
 		ShoppingCartDAO shoppingCartDAO = new ShoppingCartDAO();
 		
-//		shoppingCartDAO.addShoppingCart(1);
-		Set<ShoppingCartItem> shoppingCartItems = shoppingCartDAO.listProductItemByUserID(1);
-		for(ShoppingCartItem shoppingCartItem : shoppingCartItems){
-			System.out.println(shoppingCartItem.getProductItem().getProduct().getName());
-			shoppingCartItem.getProductItem().getVariationOptions().forEach(p -> System.out.println(p.getValue()));
-		}
-
+//		shoppingCartDAO.addShoppingCart(3);
+//		Set<ShoppingCartItem> shoppingCartItems = shoppingCartDAO.listProductItemByUserID(3);
+//		shoppingCartItems.forEach(p -> System.out.println(p.getProductItem().getSku()));
+		ShoppingCart shoppingCart = shoppingCartDAO.getShoppingCart(3);
+		System.out.println(shoppingCart.getShoppingCartID());
 
 	}
 	
 	public static void demoShoppingCartItem() {
 		ShoppingCartItemDAO shoppingCartItemDAO = new ShoppingCartItemDAO();
+		ShoppingCartDAO shoppingCartDAO = new ShoppingCartDAO();
 		
-		shoppingCartItemDAO.addProductToShoppingCart(3, 1, 2);
-//		shoppingCartItemDAO.addProductToShoppingCart(4, 1, 1);
-//		shoppingCartItemDAO.deleleProductToShoppingCart(3, 1);
+		shoppingCartItemDAO.addProductToShoppingCart(3, 3, 2);
+		shoppingCartItemDAO.addProductToShoppingCart(2, 3, 1);
+//		shoppingCartItemDAO.deleleProductToShoppingCart(4, 1);
 	}
 
 	public static void demoVariation(){
@@ -95,7 +97,19 @@ public class demo {
 		variationOptions.forEach(p -> System.out.println(p.getValue()));
 	}
 
+	public static void demeOrder(){
+		ShopOrderDAO shopOrderDAO = new ShopOrderDAO();
+		OrderLineDAO orderLineDAO = new OrderLineDAO();
+
+		int shipping_method_ID = 1;
+		int address_ID = 2;
+		int user_ID = 3;
+		int payment_method_ID = 3;
+
+		shopOrderDAO.addShopOrder(shipping_method_ID, address_ID, user_ID, payment_method_ID);
+	}
+
 	public static void main(String[] args) throws Exception {
-		demoProduct();
+		demeOrder();
 	}
 }

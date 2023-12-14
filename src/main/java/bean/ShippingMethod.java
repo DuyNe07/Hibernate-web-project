@@ -30,7 +30,7 @@ public class ShippingMethod implements Serializable{
 	private String name;
 	
 	@Column(name = "price")
-	private int price;
+	private float price;
 	
 	@OneToMany(mappedBy = "shippingMethod")
 	private Set<ShopOrder> shopOrders = new HashSet<ShopOrder>();
@@ -62,11 +62,11 @@ public class ShippingMethod implements Serializable{
 		this.name = name;
 	}
 
-	public int getPrice() {
+	public float getPrice() {
 		return price;
 	}
 
-	public void setPrice(int price) {
+	public void setPrice(float price) {
 		this.price = price;
 	}
 
