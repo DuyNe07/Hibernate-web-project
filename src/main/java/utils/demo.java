@@ -105,8 +105,13 @@ public class demo {
 		int user_ID = 3;
 		int payment_method_ID = 3;
 
-		shopOrderDAO.addShopOrder(shipping_method_ID, address_ID, user_ID, payment_method_ID);
+//		shopOrderDAO.addShopOrder(shipping_method_ID, address_ID, user_ID, payment_method_ID);
+
+		ShopOrder shopOrders = shopOrderDAO.getShopOrderByID(40);
+		shopOrders.getOrderLines().forEach(p -> System.out.println(p.getProductItem().getSku()));
 	}
+
+
 
 	public static void main(String[] args){
 		demeOrder();
