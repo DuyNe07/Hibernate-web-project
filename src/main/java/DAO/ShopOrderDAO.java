@@ -10,19 +10,20 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Root;
 import java.time.LocalDate;
-import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 public class ShopOrderDAO {
     private static final SessionFactory factory = HibernateUtil.getSessionFactory();
 
-    public void addShopOrder(int shippingMethodID, int addressID, int userID, int paymentMethodID){
+    public boolean addShopOrder(int shippingMethodID, int addressID, int userID, int paymentMethodID){
         ShippingMethodDAO shippingMethodDAO = new ShippingMethodDAO();
         AddressDAO addressDAO = new AddressDAO();
         UserAccountDAO userAccountDAO = new UserAccountDAO();
         PaymentMethodDAO paymentMethodDAO = new PaymentMethodDAO();
         OrderStatusDAO orderStatusDAO = new OrderStatusDAO();
         OrderLineDAO orderLineDAO = new OrderLineDAO();
+        ShoppingCartDAO shoppingCartDAO = new ShoppingCartDAO();
 
         ShopOrder newShopOrder = new ShopOrder();
         UserAccount userAccount = userAccountDAO.getUserAccount(userID);
@@ -36,23 +37,40 @@ public class ShopOrderDAO {
         newShopOrder.setUserAccount(userAccount);
         newShopOrder.setShippingMethod(shippingMethod);
         newShopOrder.setPaymentMethod(paymentMethod);
+        newShopOrder.setOrderTotal(shoppingCartDAO.cartCheckoutByUserID(userID) + shippingMethod.getPrice());
 
         try(Session session = factory.openSession()){
             try {
                 session.getTransaction().begin();
                 session.save(newShopOrder);
-                session.getTransaction().commit();
-                System.out.println("Complete cart checkout");
+                if(orderLineDAO.addOrderLineByUserID(session, newShopOrder, userID)){
+                    shoppingCartDAO.cleanCartAfterCheckout(userID);
+                    session.getTransaction().commit();
+                    System.out.println("Complete cart checkout");
+                }else{
+                    System.out.println("An error occurred while adding a shop order");
+                    session.getTransaction().rollback();
+                    return false;
+                }
             }catch (Exception e) {
                 if (session.getTransaction() != null) {
                     session.getTransaction().rollback();
                     System.out.println("An error occurred while adding a shop order");
                 }
                 e.printStackTrace();
+                session.close();
+                return false;
+            } finally {
+                // Đảm bảo rằng session.close() được gọi trước khi return
+                try {
+                    session.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
-            session.close();
+            // Nếu đến đây, có nghĩa là mọi thứ đã diễn ra suôn sẻ, có thể return true
+            return true;
         }
-        orderLineDAO.addOrderLineByUserID(newShopOrder, userID);
     }
 
     public Set<ShopOrder> getShopOrderByUserID(int userID){
@@ -67,6 +85,36 @@ public class ShopOrderDAO {
 
             UserAccount userAccount = session.createQuery(query).uniqueResult();
             return userAccount.getShopOrders();
+        }
+    }
+
+    public void updateOrderStatus(int shopOrderID, int orderStatusID){
+        try(Session session = factory.openSession()){
+            try{
+                session.getTransaction().begin();
+                ShopOrder shopOrder = session.get(ShopOrder.class, shopOrderID);
+                OrderStatus orderStatus = session.get(OrderStatus.class, orderStatusID);
+                shopOrder.setOrderStatus(orderStatus);
+                session.saveOrUpdate(shopOrder);
+                session.getTransaction().commit();
+                session.close();
+            }catch (Exception e){
+                if (session.getTransaction() != null) {
+                    session.getTransaction().rollback();
+                    System.out.println("An error occurred while adding a shop order");
+                }
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public List<ShopOrder> getShopOrderList(){
+        try(Session session = factory.openSession()){
+            CriteriaBuilder builder = session.getCriteriaBuilder();
+            CriteriaQuery<ShopOrder> query = builder.createQuery(ShopOrder.class);
+            Root<ShopOrder> root = query.from(ShopOrder.class);
+
+            return session.createQuery(query).getResultList();
         }
     }
 

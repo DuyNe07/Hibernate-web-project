@@ -54,7 +54,7 @@ public class demo {
 //		productDAO.editProduct(7, newProduct);
 //		productDAO.addProduct(newProduct, "Shirt");
 
-		List<Product> products = productDAO.getProductsByPage(2, 3);
+		List<Product> products = productDAO.getProductsByPage(productDAO.searchProduct("Shirt"), 2, 2);
 		products.forEach(p -> System.out.println(p.getName()));
 	}
 	
@@ -99,7 +99,6 @@ public class demo {
 
 	public static void demeOrder(){
 		ShopOrderDAO shopOrderDAO = new ShopOrderDAO();
-		OrderLineDAO orderLineDAO = new OrderLineDAO();
 
 		int shipping_method_ID = 1;
 		int address_ID = 2;
@@ -109,7 +108,7 @@ public class demo {
 		shopOrderDAO.addShopOrder(shipping_method_ID, address_ID, user_ID, payment_method_ID);
 	}
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args){
 		demeOrder();
 	}
 }
