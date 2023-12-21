@@ -130,6 +130,7 @@ public class ShopOrderDAO {
 
             query.select(root);
             root.fetch("orderLines", JoinType.LEFT).fetch("productItem", JoinType.LEFT);
+            query.distinct(true);
 
             return session.createQuery(query).getResultList();
         }

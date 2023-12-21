@@ -1,9 +1,12 @@
 package DAO;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.criteria.*;
 
+import bean.OrderLine;
+import bean.ShopOrder;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
@@ -191,6 +194,21 @@ public class UserAccountDAO {
 				e.printStackTrace();
 			}
 			session.close();
+		}
+	}
+
+	public Set<ShopOrder> getListOrderByUserID(int userID){
+		try(Session session = factory.openSession()){
+			CriteriaBuilder builder = session.getCriteriaBuilder();
+			CriteriaQuery<UserAccount> query = builder.createQuery(UserAccount.class);
+			Root<UserAccount> root = query.from(UserAccount.class);
+
+			query.where(builder.equal(root.get("userID"), userID));
+			root.fetch("shopOrders",JoinType.LEFT);
+			query.orderBy(builder.desc(root.get("shopOrders").get("orderDate")));
+
+			UserAccount userAccount = session.createQuery(query).uniqueResult();
+			return userAccount.getShopOrders();
 		}
 	}
 }

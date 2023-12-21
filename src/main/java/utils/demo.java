@@ -107,13 +107,22 @@ public class demo {
 
 //		shopOrderDAO.addShopOrder(shipping_method_ID, address_ID, user_ID, payment_method_ID);
 
-		ShopOrder shopOrders = shopOrderDAO.getShopOrderByID(40);
-		shopOrders.getOrderLines().forEach(p -> System.out.println(p.getProductItem().getSku()));
+//		ShopOrder shopOrders = shopOrderDAO.getShopOrderByID(40);
+//		shopOrders.getOrderLines().forEach(p -> System.out.println(p.getProductItem().getSku()));
+		List<ShopOrder> shopOrders = shopOrderDAO.getShopOrderList();
+		shopOrders.forEach(p -> System.out.println(p.getShopOrderID()));
 	}
 
 
 
 	public static void main(String[] args){
-		demeOrder();
+		ProductDAO productDAO = new ProductDAO();
+		UserAccountDAO userAccountDAO = new UserAccountDAO();
+
+//		ProductCategoryDAO productCategoryDAO = new ProductCategoryDAO();
+//		System.out.println(productCategoryDAO.totalSold(1));
+
+		Set<ShopOrder> orderLines = userAccountDAO.getListOrderByUserID(3);
+		orderLines.forEach(p -> System.out.println(p.getOrderStatus().getStatus()));
 	}
 }
